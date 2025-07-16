@@ -7,13 +7,12 @@ class SingleItemCarousel extends HTMLElement {
     constructor() {
         super();
         this.items = Array.from(this.querySelectorAll('.c-carousel-item'))
+        this.dots = this.querySelectorAll('.carousel-item-count span')
         this.layout = this.querySelector('.c-carousel-layout')
         this.element_arr = this.items
         this.current = this.element_arr.length - 1
         this.left_prev = []
         this.right_prev = []
-
-
     }
 
     show_el(values) {
@@ -37,15 +36,24 @@ class SingleItemCarousel extends HTMLElement {
             return Math.sqrt(1 - (--n * n));
         };
 
+        const outExpo = function (n) {
+            return 1 == n ? n : 1 - Math.pow(2, -10 * n);
+        };
+        const inExpo = function (n) {
+            return 0 == n ? 0 : Math.pow(1024, n - 1);
+        };
+        const easeOut = progress =>
+            Math.pow(--progress, 5) + 1;
+
 
         let start = 0
         const animate = timestamp => {
             if (!start) start = timestamp
             const progress = Math.min((timestamp - start) / 350, 1)
 
-            const opac_progress = Math.min((timestamp - start) / 450, 1)
-            const ease = outCirc(opac_progress)
-            const ease_out = inCirc(opac_progress)
+            const longer_progress = Math.min((timestamp - start) / 450, 1)
+            const ease = outQuad(longer_progress)
+            const ease_out = outCirc(longer_progress)
 
             if (opacity) {
                 opacity_el.style.opacity = hide ? 1 - (opacity * progress) : opacity * progress
@@ -53,9 +61,9 @@ class SingleItemCarousel extends HTMLElement {
             }
             if (x) {
                 translateX_el.style.opacity = remove ? 1 - (1 * progress) : 1 * progress
-                translateX_el.style.transform = remove ? `translate(${x * ease_out}%) scale(${1 - (.6 * ease_out)})` : `translate(${x - (x * ease)}%) scale(${.6 + (.4 * ease)})`
+                translateX_el.style.transform = remove ? `translate(${x * ease}%) scale(${1 - (.6 * ease)})` : `translate(${x - (x * ease)}%) scale(${.6 + (.4 * ease)})`
             }
-            if (opac_progress < 1) {
+            if (longer_progress < 1) {
                 requestAnimationFrame(animate)
             } else {
                 this.transition_ended()
@@ -67,11 +75,10 @@ class SingleItemCarousel extends HTMLElement {
 
     rotate(direction) {
         SingleItemCarousel.dir = direction
-        
+
         if (direction == 'right') {
 
             const current = this.current === this.element_arr.length - 1 ? 0 : this.current + 1
-            // const has_been_moved = this.items[current].classList.contains('--move-left')
             const has_been_moved = this.items[current].style.zIndex == 10
 
             // Previous moved item gets moved back and item that just had opacity added now gets removed.
@@ -83,7 +90,7 @@ class SingleItemCarousel extends HTMLElement {
                     opacity: 1,
                     hide: true,
                     translateX_el: this.items[current],
-                    x: -100,
+                    x: -70,
                     remove: false
                 })
 
@@ -96,7 +103,7 @@ class SingleItemCarousel extends HTMLElement {
                     opacity: 1,
                     hide: false,
                     translateX_el: this.items[this.current],
-                    x: 100,
+                    x: 70,
                     remove: true
                 })
 
@@ -117,7 +124,7 @@ class SingleItemCarousel extends HTMLElement {
                     opacity: 1,
                     hide: true,
                     translateX_el: this.items[current],
-                    x: 100,
+                    x: 70,
                     remove: false
                 })
                 this.right_prev.shift()
@@ -129,7 +136,7 @@ class SingleItemCarousel extends HTMLElement {
                     opacity: 1,
                     hide: false,
                     translateX_el: this.items[this.current],
-                    x: -100,
+                    x: -70,
                     remove: true
                 })
 
@@ -138,7 +145,8 @@ class SingleItemCarousel extends HTMLElement {
 
             this.current = current
         }
-        console.log('this.current:', this.current)
+        this.querySelector('.carousel-item-count [style]').style.backgroundColor = 'lightGrey'
+        this.dots[this.current].style.backgroundColor = 'black'
     }
 
     update_height() {

@@ -26,7 +26,6 @@ img {
     position: relative;
     overflow: hidden;
     .c-carousel-item {
-        /* transition: translate .5s ease, opacity .5s ease-in-out; */
         position: absolute;
         width: 100%;
     }
@@ -40,14 +39,7 @@ img {
     transition: opacity .3s ease-in;
 }
 
-.--move-right {
-    z-index: 100;
-    /* translate: 100% */
-}
-.--move-left {
-    z-index: 100;
-    /* translate: -100% */
-}
+
 .c-left-btn,
     .c-right-btn {
         cursor: pointer;
@@ -102,6 +94,7 @@ img {
             height: 10px;
             border-radius: 100%;
             display: block;
-            background: lightgrey;
+            background-color: lightgrey;
+            transition: background-color .5s;
         }
     }
