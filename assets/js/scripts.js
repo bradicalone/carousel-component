@@ -74,8 +74,22 @@ class SingleItemCarousel extends HTMLElement {
     /*
     * Two items
     */
-    toggle(){
-
+    toggle(onLoad=false){
+        if(onLoad) {
+            this.items[this.current].style.opacity = 1
+            this.items[this.current].style.transform = 'scale(1)'
+            return;
+        }
+        this.items.forEach((item,i) => {
+            if(item.hasAttribute('style')) {
+                item.removeAttribute('style')
+                this.dots[i].style.backgroundColor = 'lightGrey'
+            } else {
+                item.style.opacity = 1
+                item.style.transform = 'scale(1)'
+                this.dots[i].style.backgroundColor = 'black'
+            }
+        })
     }
 
     /*
@@ -85,7 +99,6 @@ class SingleItemCarousel extends HTMLElement {
         SingleItemCarousel.dir = direction
 
         if (direction == 'right') {
-
             const current = this.current === this.element_arr.length - 1 ? 0 : this.current + 1
             const has_been_moved = this.items[current].style.zIndex == 10
 
@@ -125,7 +138,6 @@ class SingleItemCarousel extends HTMLElement {
 
             // Previous moved item gets moved back and item that just had opacity added now gets removed.
             if (has_been_moved) {
-                console.log('has_been_moved:', has_been_moved)
 
                 this.show_el({
                     opacity_el: this.items[this.current],
@@ -165,8 +177,6 @@ class SingleItemCarousel extends HTMLElement {
     }
 
     transition_ended(item) {
-        console.log('this.current:', this.current)
-        console.log('this.previous_inview_index:', this.previous_inview_index)
         this.dots[this.previous_inview_index].style.backgroundColor = 'lightGrey'
         this.dots[this.current].style.backgroundColor = 'black'
         this.previous_inview_index = this.current
@@ -177,20 +187,19 @@ class SingleItemCarousel extends HTMLElement {
             prev_item.removeAttribute('style')
             prev_arr.pop()
         }
-        console.log('prev_arr:', prev_arr)
     }
 
 
     addEventListeners() {
         this.querySelector('.c-left-btn').addEventListener('click', () => this.rotate('left'))
-        this.querySelector('.c-right-btn').addEventListener('click', () => this.rotate('right'))
+        this.querySelector('.c-right-btn').addEventListener('click', () => this.items.length == 2 ? this.toggle() : this.rotate('right'))
     }
     connectedCallback() {
         this.update_height()
         this.addEventListeners()
-        console.log('this.element_arr:', this.element_arr)
         this.dots[this.current].style.backgroundColor = 'black'
         this.previous_inview_index = this.current
+        this.items.length == 2 && this.toggle(true)
     }
 }
 customElements.define('single-item-carousel', SingleItemCarousel);
