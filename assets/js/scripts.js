@@ -76,7 +76,7 @@ class SingleItemCarousel extends HTMLElement {
     */
     toggle(onLoad=false){
         if(onLoad) {
-            this.items[this.current].style.opacity = 1
+            
             this.items[this.current].style.transform = 'scale(1)'
             return;
         }
@@ -199,6 +199,7 @@ class SingleItemCarousel extends HTMLElement {
         this.addEventListeners()
         this.dots[this.current].style.backgroundColor = 'black'
         this.previous_inview_index = this.current
+        this.items[this.current].style.opacity = 1
         this.items.length == 2 && this.toggle(true)
     }
 }
