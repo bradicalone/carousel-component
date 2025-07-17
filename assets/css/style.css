@@ -95,6 +95,6 @@ img {
             border-radius: 100%;
             display: block;
             background-color: lightgrey;
-            transition: background-color .5s;
+            transition: background-color .35s;
         }
     }

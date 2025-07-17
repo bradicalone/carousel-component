@@ -3,7 +3,7 @@
 
 class SingleItemCarousel extends HTMLElement {
 
-    static dir = 'd'
+    static dir = ''
     constructor() {
         super();
         this.items = Array.from(this.querySelectorAll('.c-carousel-item'))
@@ -50,29 +50,37 @@ class SingleItemCarousel extends HTMLElement {
         const animate = timestamp => {
             if (!start) start = timestamp
             const progress = Math.min((timestamp - start) / 350, 1)
-
             const longer_progress = Math.min((timestamp - start) / 450, 1)
             const ease = outQuad(longer_progress)
-            const ease_out = outCirc(longer_progress)
+            const ease_out = outCirc(progress)
 
             if (opacity) {
                 opacity_el.style.opacity = hide ? 1 - (opacity * progress) : opacity * progress
                 opacity_el.style.transform = hide ? `scale(${1 - (.1 * ease)})` : `scale(${.9 + (.1 * ease)})`
             }
             if (x) {
-                translateX_el.style.opacity = remove ? 1 - (1 * progress) : 1 * progress
+                translateX_el.style.opacity = remove ? 1 - (1 * ease_out) : 1 * ease_out
                 translateX_el.style.transform = remove ? `translate(${x * ease}%) scale(${1 - (.6 * ease)})` : `translate(${x - (x * ease)}%) scale(${.6 + (.4 * ease)})`
             }
             if (longer_progress < 1) {
                 requestAnimationFrame(animate)
             } else {
-                this.transition_ended()
+                this.transition_ended(translateX_el)
             }
         }
         requestAnimationFrame(animate)
     }
 
+    /*
+    * Two items
+    */
+    toggle(){
 
+    }
+
+    /*
+    * Three or more items
+    */
     rotate(direction) {
         SingleItemCarousel.dir = direction
 
@@ -145,8 +153,7 @@ class SingleItemCarousel extends HTMLElement {
 
             this.current = current
         }
-        this.querySelector('.carousel-item-count [style]').style.backgroundColor = 'lightGrey'
-        this.dots[this.current].style.backgroundColor = 'black'
+
     }
 
     update_height() {
@@ -158,6 +165,12 @@ class SingleItemCarousel extends HTMLElement {
     }
 
     transition_ended(item) {
+        console.log('this.current:', this.current)
+        console.log('this.previous_inview_index:', this.previous_inview_index)
+        this.dots[this.previous_inview_index].style.backgroundColor = 'lightGrey'
+        this.dots[this.current].style.backgroundColor = 'black'
+        this.previous_inview_index = this.current
+
         const prev_arr = this[`${SingleItemCarousel.dir}_prev`]
         const prev_item = prev_arr?.[1]
         if (prev_item) {
@@ -176,7 +189,8 @@ class SingleItemCarousel extends HTMLElement {
         this.update_height()
         this.addEventListeners()
         console.log('this.element_arr:', this.element_arr)
-
+        this.dots[this.current].style.backgroundColor = 'black'
+        this.previous_inview_index = this.current
     }
 }
 customElements.define('single-item-carousel', SingleItemCarousel);
