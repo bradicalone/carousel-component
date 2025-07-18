@@ -2,7 +2,7 @@
 
 
 class SingleItemCarousel extends HTMLElement {
-
+    static moving = false
     static dir = ''
     constructor() {
         super();
@@ -13,9 +13,11 @@ class SingleItemCarousel extends HTMLElement {
         this.current = this.element_arr.length - 1
         this.left_prev = []
         this.right_prev = []
+
     }
 
     show_el(values) {
+        SingleItemCarousel.moving = true
         const { translateX_el, opacity_el, opacity, x, remove, hide } = values
 
         // Slow then fast
@@ -65,6 +67,7 @@ class SingleItemCarousel extends HTMLElement {
             if (longer_progress < 1) {
                 requestAnimationFrame(animate)
             } else {
+                SingleItemCarousel.moving = false
                 this.transition_ended(translateX_el)
             }
         }
@@ -74,14 +77,14 @@ class SingleItemCarousel extends HTMLElement {
     /*
     * Two items
     */
-    toggle(onLoad=false){
-        if(onLoad) {
-            
+    toggle(onLoad = false) {
+        if (onLoad) {
+
             this.items[this.current].style.transform = 'scale(1)'
             return;
         }
-        this.items.forEach((item,i) => {
-            if(item.hasAttribute('style')) {
+        this.items.forEach((item, i) => {
+            if (item.hasAttribute('style')) {
                 item.removeAttribute('style')
                 this.dots[i].style.backgroundColor = 'lightGrey'
             } else {
@@ -97,6 +100,7 @@ class SingleItemCarousel extends HTMLElement {
     */
     rotate(direction) {
         SingleItemCarousel.dir = direction
+        if (SingleItemCarousel.moving) return;
 
         if (direction == 'right') {
             const current = this.current === this.element_arr.length - 1 ? 0 : this.current + 1
@@ -169,8 +173,10 @@ class SingleItemCarousel extends HTMLElement {
     }
 
     update_height() {
+        console.log('this:', this.items[0])
         const resizeObserve = new ResizeObserver(entries => {
             const height = entries[0].contentRect.height
+            console.log('height:', height)
             this.layout.style.height = height + 'px'
         })
         resizeObserve.observe(this.items[0])
@@ -201,6 +207,7 @@ class SingleItemCarousel extends HTMLElement {
         this.previous_inview_index = this.current
         this.items[this.current].style.opacity = 1
         this.items.length == 2 && this.toggle(true)
+       
     }
 }
 customElements.define('single-item-carousel', SingleItemCarousel);
