@@ -26,6 +26,12 @@ single-item-carousel {
 .c-carousel-item {
     opacity: 0;
 }
+
+.--toggle {
+    transform: scale(.8);
+    transition: transform .5s ease, opacity .5s ease;
+}
+
 .carousel-item-count {
     margin-top: 20px;
 }

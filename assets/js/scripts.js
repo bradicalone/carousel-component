@@ -79,8 +79,9 @@ class SingleItemCarousel extends HTMLElement {
     */
     toggle(onLoad = false) {
         if (onLoad) {
-
             this.items[this.current].style.transform = 'scale(1)'
+            this.items[0].classList.add('--toggle')
+            this.items[1].classList.add('--toggle')
             return;
         }
         this.items.forEach((item, i) => {
